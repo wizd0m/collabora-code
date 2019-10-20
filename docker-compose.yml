@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  re-proxy:
+    image: nginx:1.16-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./r-proxy:/etc/nginx/conf.d/:ro
+  
+  collabora:
+    image: collabora/code:4.0.6.1
+    expose:
+      - "9980"
+    environment:
+      - domain=nextcloud\\.local\\.com
+      - username=admin
+      - password=password
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=false
+    cap_add:
+      - MKNOD
+    depends_on:
+      - re-proxy
+    restart: always
